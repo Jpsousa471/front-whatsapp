@@ -3,7 +3,7 @@ import './App.css';
 import Image from './assets/profile-img.jpg';
 import SendMessageIcon from './assets/send.png';
 import Logo from './assets/background.png';
-import socket from 'socket.io-client';
+import * as socket from 'socket.io-client';
 
 const io = socket('http://localhost:4000');
 
@@ -22,7 +22,7 @@ function App() {
   useEffect(() => {
     io.on('users', (users) => setUsers(users));
     io.on("message", (message) => setMessages((messages) => [...messages, message]));
-    socket.on("privateMessage", (msg) => {setPrivateMessages((prev) => [...prev, msg]);});      
+    io.on("privateMessage", (msg) => {setPrivateMessages((prev) => [...prev, msg]);});      
     }, []);
 
   const handleJoin = () =>{
@@ -45,10 +45,10 @@ function App() {
 
   const handlePrivateMessage = () => {
     if (recipientId && message) {
-      socket.emit("privateMessage", { recipientId, message });
+      io.emit("privateMessage", { recipientId, message });
       setMessage("");
     }
-  };
+  }
 
 
   const joinInd = () => {
